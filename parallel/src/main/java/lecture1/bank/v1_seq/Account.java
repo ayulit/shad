@@ -15,12 +15,12 @@ public class Account {
     public String getId() {
         return id;
     }
-    public int getBalance(){
+    synchronized public int getBalance(){
         return balance;
     }
 
     // deposit and withdraw
-    public void post(int value) {
+    synchronized public void post(int value) {
         balance += value;
     }
 

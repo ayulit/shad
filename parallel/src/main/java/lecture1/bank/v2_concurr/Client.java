@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import lecture1.bank.v1_seq.Account;
 import lecture1.bank.v1_seq.Bank;
 
+/** v2_concurr  */
 public class Client extends Thread {
 
     static final int numClients = 2;
@@ -39,28 +40,34 @@ public class Client extends Thread {
                 String accountId = in.readLine();
                 Account account = bank.getAccount(accountId);
                 
-                if (account == null) {
-                    throw new Exception(tab(id) + "[" + id + "] Account not found!");
-                } else {
-                    out.println(tab(id) + "[" + id + "] Account Id: " + accountId);
-                    out.println(tab(id) + "[" + id + "] Balance: " + account.getBalance());
-                }
+                synchronized (account) {
                 
-                // automated clients reads
-                int value = Integer.parseInt(in.readLine());
-                out.println(tab(id) + "[" + id + "] Enter amount: " + value);
+                    if (account == null) {
+                        throw new Exception(tab(id) + "[" + id + "] Account not found!");
+                    } else {
+                        out.println(tab(id) + "[" + id + "] Account Id: " + accountId);
+                        out.println(tab(id) + "[" + id + "] Balance: " + account.getBalance());
+                    }
+                    
+                    // automated clients reads
+                    int value = Integer.parseInt(in.readLine());
+                    out.println(tab(id) + "[" + id + "] Enter amount: " + value);
                 
-                // check for negative balance
-                if (account.getBalance() + value >= 0) {
-                    
-                    // Thread.sleeps for negative balance simulation!
-                    Thread.sleep(100); // 0,1 sec
-                    account.post(value);
-                    Thread.sleep(100); // 0,1 sec
-                    out.println(tab(id) + "[" + id + "] Balance: " + account.getBalance());
-                    
-                } else {
-                    throw new Exception("Not enough money!");
+                
+                
+                    // check for negative balance
+                    if (account.getBalance() + value >= 0) {
+                        
+                        // Thread.sleeps for negative balance simulation!
+                        Thread.sleep(100); // 0,1 sec
+                        account.post(value);
+                        Thread.sleep(100); // 0,1 sec
+                        out.println(tab(id) + "[" + id + "] Balance: " + account.getBalance());
+                        
+                    } else {
+                        throw new Exception("Not enough money!");
+                    }
+                
                 }
                 
             } catch (Exception e) {
@@ -87,7 +94,7 @@ public class Client extends Thread {
         
         for (int i = 0; i < numClients; i++) {
             // opening file from 'resourses'
-            File inFile = new File (Client.class.getClass().getResource( "/bank/input" + (i+1) ).toURI());
+            File inFile = new File (Client.class.getClass().getResource( "/lecture1/bank/v2_concurr/input" + (i+1) ).toURI());
             
             BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(inFile)));
             clients[i] = new Client(i+1, bank, in, System.out);
