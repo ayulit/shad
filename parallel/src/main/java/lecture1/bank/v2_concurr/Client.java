@@ -52,9 +52,11 @@ public class Client extends Thread {
                 
                 // check for negative balance
                 if (account.getBalance() + value >= 0) {
-
-                    account.post(value);
                     
+                    // Thread.sleeps for negative balance simulation!
+                    Thread.sleep(100); // 0,1 sec
+                    account.post(value);
+                    Thread.sleep(100); // 0,1 sec
                     out.println(tab(id) + "[" + id + "] Balance: " + account.getBalance());
                     
                 } else {
